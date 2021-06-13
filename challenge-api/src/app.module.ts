@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { UserModule } from './user/user.module';
 import envsConfig from './config/envs.config';
 
 @Module({
@@ -31,6 +32,7 @@ import envsConfig from './config/envs.config';
     }),
     DatabaseModule,
     HealthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
