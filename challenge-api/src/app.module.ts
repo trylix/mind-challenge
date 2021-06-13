@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DatabaseModule } from './database/database.module';
 import envsConfig from './config/envs.config';
 
 @Module({
@@ -14,6 +15,11 @@ import envsConfig from './config/envs.config';
           .default('development'),
         NAME: Joi.string().default('challenge-api'),
         PORT: Joi.number().default(8090),
+        TYPEORM_HOST: Joi.string().required(),
+        TYPEORM_PORT: Joi.number().default(3306),
+        TYPEORM_USERNAME: Joi.string().required(),
+        TYPEORM_PASSWORD: Joi.string(),
+        TYPEORM_DATABASE: Joi.string().required(),
       }),
       validationOptions: {
         allowUnknown: true,
@@ -22,6 +28,7 @@ import envsConfig from './config/envs.config';
       load: [envsConfig],
       isGlobal: true,
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
