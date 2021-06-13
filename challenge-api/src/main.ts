@@ -1,6 +1,6 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import * as helmet from 'helmet';
 import { AppModule } from './app.module';
 import { ValidationException } from './exceptions/validation.exception';
@@ -18,6 +18,8 @@ async function bootstrap() {
       exceptionFactory: (errors) => new ValidationException(errors),
     }),
   );
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const configService = app.get(ConfigService);
 

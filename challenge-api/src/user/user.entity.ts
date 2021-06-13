@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import { Exclude } from 'class-transformer';
 import {
   BeforeInsert,
   Column,
@@ -21,6 +22,7 @@ export class User {
   email!: string;
 
   @Column()
+  @Exclude()
   password!: string;
 
   @Column()
@@ -51,9 +53,11 @@ export class User {
   following: User[];
 
   @CreateDateColumn({ name: 'created_at' })
+  @Exclude()
   createdAt?: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
+  @Exclude()
   updatedAt?: Date;
 
   @BeforeInsert()
