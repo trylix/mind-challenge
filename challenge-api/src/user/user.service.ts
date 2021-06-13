@@ -23,4 +23,16 @@ export class UserService {
 
     return entity;
   }
+
+  async findByEmail(email: string) {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new ValidationException({
+        message: 'user not found',
+        field: 'email',
+      });
+    }
+
+    return user;
+  }
 }

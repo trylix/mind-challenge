@@ -69,4 +69,36 @@ describe('UserService', () => {
       });
     });
   });
+
+  describe('when trying to find the user by email', () => {
+    const mockEmail = 'test@test.com';
+
+    describe('and he does not exist', () => {
+      beforeEach(() => {
+        findByEmail.mockReturnValue(undefined);
+      });
+
+      it('should throw an error', async () => {
+        await expect(service.findByEmail(mockEmail)).rejects.toThrow(
+          'user not found',
+        );
+      });
+    });
+
+    describe('and he exist', () => {
+      let user: User;
+
+      beforeEach(() => {
+        user = new User();
+        user.email = mockEmail;
+
+        findByEmail.mockReturnValue(Promise.resolve(user));
+      });
+
+      it('should return the user data', async () => {
+        const fetchedUser = await service.findByEmail(mockEmail);
+        expect(fetchedUser).toEqual(user);
+      });
+    });
+  });
 });

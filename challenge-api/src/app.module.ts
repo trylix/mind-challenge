@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import envsConfig from './config/envs.config';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
-import envsConfig from './config/envs.config';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import envsConfig from './config/envs.config';
     DatabaseModule,
     HealthModule,
     UserModule,
+    PassportModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
