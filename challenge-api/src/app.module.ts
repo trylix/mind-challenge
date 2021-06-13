@@ -4,6 +4,7 @@ import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
+import { HealthModule } from './health/health.module';
 import envsConfig from './config/envs.config';
 
 @Module({
@@ -29,6 +30,7 @@ import envsConfig from './config/envs.config';
       isGlobal: true,
     }),
     DatabaseModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
