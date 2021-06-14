@@ -14,11 +14,19 @@ export class UserService {
   ) {}
 
   async create(dto: CreateUserDto) {
-    const userExists = await this.userRepository.findByEmail(dto.email);
+    let userExists = await this.userRepository.findByEmail(dto.email);
     if (userExists) {
       throw new ValidationException({
         message: 'e-mail already registered',
         field: 'email',
+      });
+    }
+
+    userExists = await this.userRepository.findByUsername(dto.username);
+    if (userExists) {
+      throw new ValidationException({
+        message: 'username already registered',
+        field: 'username',
       });
     }
 
@@ -49,6 +57,7 @@ export class UserService {
 
   async findById(id: string) {
     const user = await this.userRepository.findOne(id);
+
     if (!user) {
       throw new ValidationException({
         message: 'user not found',

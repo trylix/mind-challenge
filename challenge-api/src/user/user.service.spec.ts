@@ -8,11 +8,13 @@ describe('UserService', () => {
   let service: UserService;
 
   let findByEmail: jest.Mock;
+  let findByUsername: jest.Mock;
   let findOne: jest.Mock;
   let save: jest.Mock;
 
   beforeEach(async () => {
     findByEmail = jest.fn();
+    findByUsername = jest.fn();
     findOne = jest.fn();
     save = jest.fn();
 
@@ -24,6 +26,7 @@ describe('UserService', () => {
           useValue: {
             save,
             findByEmail,
+            findByUsername,
             findOne,
           },
         },
@@ -79,9 +82,27 @@ describe('UserService', () => {
         findByEmail.mockReturnValue(undefined);
       });
 
-      it('should return the user data', async () => {
-        const fetchedUser = await service.create(mockCreateUserDto);
-        expect(fetchedUser).toEqual(user);
+      describe('but the username is registered', () => {
+        beforeEach(() => {
+          findByUsername.mockReturnValue(Promise.resolve(user));
+        });
+
+        it('should throw an error', async () => {
+          await expect(service.create(mockCreateUserDto)).rejects.toThrow(
+            'username already registered',
+          );
+        });
+      });
+
+      describe('and the username is not registered', () => {
+        beforeEach(() => {
+          findByUsername.mockReturnValue(undefined);
+        });
+
+        it('should return the user data', async () => {
+          const fetchedUser = await service.create(mockCreateUserDto);
+          expect(fetchedUser).toEqual(user);
+        });
       });
     });
   });

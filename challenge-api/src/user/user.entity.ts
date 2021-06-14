@@ -25,20 +25,17 @@ export class User {
   @Exclude()
   password!: string;
 
-  @Column()
+  @Index()
+  @Column({ unique: true })
   username!: string;
 
-  @Column({
-    nullable: true,
-  })
+  @Column({ nullable: true })
   bio?: string;
 
-  @Column({
-    nullable: true,
-  })
+  @Column({ nullable: true })
   image?: string;
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { cascade: true })
   @JoinTable({
     name: 'followers',
     joinColumn: {
