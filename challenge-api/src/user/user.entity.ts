@@ -15,6 +15,7 @@ import {
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
+  @Exclude()
   id!: string;
 
   @Index()
@@ -35,7 +36,7 @@ export class User {
   @Column({ nullable: true })
   image?: string;
 
-  @ManyToMany(() => User, { cascade: true })
+  @ManyToMany(() => User, { cascade: true, lazy: true })
   @JoinTable({
     name: 'followers',
     joinColumn: {
@@ -47,7 +48,7 @@ export class User {
       referencedColumnName: 'id',
     },
   })
-  following: User[];
+  following: Promise<User[]>;
 
   @CreateDateColumn({ name: 'created_at' })
   @Exclude()
