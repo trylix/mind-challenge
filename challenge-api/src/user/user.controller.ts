@@ -26,7 +26,9 @@ export class UserController {
 
   @Post('login')
   @UseGuards(LocalGuard)
-  login(@AuthUser() user: User) {
+  login(@AuthUser() entity: User) {
+    const user = this.userService.getUserWithAccessToken(entity);
+
     return { user };
   }
 }

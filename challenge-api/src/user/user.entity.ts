@@ -60,6 +60,8 @@ export class User {
   @Exclude()
   updatedAt?: Date;
 
+  token?: string;
+
   @BeforeInsert()
   protected async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);

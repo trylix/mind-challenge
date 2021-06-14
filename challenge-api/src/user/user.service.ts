@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationException } from 'src/exceptions/validation.exception';
+import { TokenService } from 'src/token/token.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly tokenService: TokenService,
+  ) {}
 
   async create(dto: CreateUserDto) {
     const userExists = await this.userRepository.findByEmail(dto.email);
@@ -33,6 +37,12 @@ export class UserService {
       });
     }
 
+    return user;
+  }
+
+  getUserWithAccessToken(user: User) {
+    const token = this.tokenService.generateAccessTokenToUser(user);
+    user.token = token;
     return user;
   }
 }

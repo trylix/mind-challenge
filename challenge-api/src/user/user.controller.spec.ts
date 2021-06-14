@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserBodyDto } from './dto/create-user-body.dto';
 import { UserController } from './user.controller';
+import { User } from './user.entity';
 import { UserService } from './user.service';
 
 describe('UserController', () => {
@@ -15,6 +16,7 @@ describe('UserController', () => {
           provide: UserService,
           useValue: {
             create: jest.fn(() => true),
+            getUserWithAccessToken: jest.fn(() => true),
           },
         },
       ],
@@ -41,6 +43,16 @@ describe('UserController', () => {
       await controller.create(params);
 
       expect(serviceSpy.create).toHaveBeenCalledWith(params.user);
+    });
+  });
+
+  describe('login', () => {
+    it('should return a authenticated user data', async () => {
+      const user = new User();
+
+      await controller.login(user);
+
+      expect(serviceSpy.getUserWithAccessToken).toHaveBeenCalledWith(user);
     });
   });
 });

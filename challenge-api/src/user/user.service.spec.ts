@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { TokenService } from 'src/token/token.service';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
@@ -19,6 +20,12 @@ describe('UserService', () => {
           useValue: {
             save: jest.fn(() => true),
             findByEmail,
+          },
+        },
+        {
+          provide: TokenService,
+          useValue: {
+            getUserWithAccessToken: jest.fn(() => true),
           },
         },
       ],
