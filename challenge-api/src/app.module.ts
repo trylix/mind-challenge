@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import envsConfig from './config/envs.config';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -24,6 +25,8 @@ import { UserModule } from './user/user.module';
         TYPEORM_USERNAME: Joi.string().required(),
         TYPEORM_PASSWORD: Joi.string(),
         TYPEORM_DATABASE: Joi.string().required(),
+        JWT_SECRET: Joi.string().default('mysupersecret'),
+        ACCESS_TOKEN_DURATION_MINUTES: Joi.number().default(60),
       }),
       validationOptions: {
         allowUnknown: true,
@@ -37,6 +40,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     PassportModule,
     AuthModule,
+    TokenModule,
   ],
   controllers: [AppController],
   providers: [AppService],

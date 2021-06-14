@@ -13,5 +13,9 @@ export default () => {
       keepConnectionAlive: isDev,
       synchronize: isDev,
     },
+    jwt: {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.ACCESS_TOKEN_DURATION_MINUTES.concat('m'),
+    },
   };
 };
