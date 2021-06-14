@@ -100,7 +100,26 @@ describe('ProfileService', () => {
     it('should return "following" as true', async () => {
       const profile = await service.follow(mockUser.username, currentUser);
 
-      expect(profile.following).toBeTruthy;
+      expect(profile.following).toBeTruthy();
+    });
+  });
+
+  describe('when user unfollow a profile', () => {
+    let user: User;
+    let currentUser: User;
+
+    beforeEach(() => {
+      user = Object.assign(new User(), mockUser);
+      currentUser = Object.assign(new User(), mockUser);
+      currentUser.followedList = Promise.resolve([user]);
+      findByUsername.mockReturnValue(Promise.resolve(user));
+      update.mockReturnValue((data) => data);
+    });
+
+    it('should return "following" as false', async () => {
+      const profile = await service.unfollow(mockUser.username, currentUser);
+
+      expect(profile.following).toBeFalsy();
     });
   });
 });

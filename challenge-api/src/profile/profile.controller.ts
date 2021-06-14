@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -43,6 +44,20 @@ export class ProfileController {
     @AuthUser() currentUser: User,
   ) {
     const profile = await this.profileService.follow(username, currentUser);
+
+    delete profile.email;
+
+    return { profile };
+  }
+
+  @Delete(':username/follow')
+  @UseGuards(JwtGuard)
+  @HttpCode(200)
+  async unfollow(
+    @Param('username') username: string,
+    @AuthUser() currentUser: User,
+  ) {
+    const profile = await this.profileService.unfollow(username, currentUser);
 
     delete profile.email;
 

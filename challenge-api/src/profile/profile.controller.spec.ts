@@ -16,6 +16,7 @@ describe('ProfileController', () => {
           useValue: {
             findByUsername: jest.fn(() => true),
             follow: jest.fn(() => true),
+            unfollow: jest.fn(() => true),
           },
         },
       ],
@@ -51,6 +52,17 @@ describe('ProfileController', () => {
       await controller.follow(mockUsername, user);
 
       expect(serviceSpy.follow).toHaveBeenCalledWith(mockUsername, user);
+    });
+  });
+
+  describe('unfollow', () => {
+    it('should return the current unfollowed profile', async () => {
+      const mockUsername = 'test';
+      const user = new User();
+
+      await controller.unfollow(mockUsername, user);
+
+      expect(serviceSpy.unfollow).toHaveBeenCalledWith(mockUsername, user);
     });
   });
 });

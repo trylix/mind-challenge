@@ -39,4 +39,23 @@ export class ProfileService {
 
     return profile;
   }
+
+  async unfollow(username: string, currentUser?: User): Promise<User> {
+    const profile = await this.findByUsername(username);
+
+    const userFollowing = await currentUser.followedList;
+
+    if (Array.isArray(userFollowing) && profile.following) {
+      profile.following = false;
+
+      const index = userFollowing.findIndex((user) => user.id === profile.id);
+      userFollowing.splice(index, 1);
+
+      currentUser.followedList = Promise.resolve(userFollowing);
+
+      await this.userService.update(currentUser, {});
+    }
+
+    return profile;
+  }
 }
