@@ -15,6 +15,7 @@ describe('ProfileController', () => {
           provide: ProfileService,
           useValue: {
             findByUsername: jest.fn(() => true),
+            follow: jest.fn(() => true),
           },
         },
       ],
@@ -39,6 +40,17 @@ describe('ProfileController', () => {
         mockUsername,
         user,
       );
+    });
+  });
+
+  describe('follow', () => {
+    it('should return the current followed profile', async () => {
+      const mockUsername = 'test';
+      const user = new User();
+
+      await controller.follow(mockUsername, user);
+
+      expect(serviceSpy.follow).toHaveBeenCalledWith(mockUsername, user);
     });
   });
 });
