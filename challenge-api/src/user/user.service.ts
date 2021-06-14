@@ -73,4 +73,16 @@ export class UserService {
 
     return this.userRepository.save(entity);
   }
+
+  async findByUsername(username: string) {
+    const user = await this.userRepository.findByUsername(username);
+    if (!user) {
+      throw new ValidationException({
+        message: 'user not found',
+        field: 'username',
+      });
+    }
+
+    return user;
+  }
 }

@@ -196,4 +196,36 @@ describe('UserService', () => {
       expect(updatedUser).not.toEqual(user);
     });
   });
+
+  describe('when trying to find a user by username', () => {
+    const mockUsername = 'test';
+
+    describe('and he does not exist', () => {
+      beforeEach(() => {
+        findByUsername.mockReturnValue(undefined);
+      });
+
+      it('should throw an error', async () => {
+        await expect(service.findByUsername(mockUsername)).rejects.toThrow(
+          'user not found',
+        );
+      });
+    });
+
+    describe('and he exist', () => {
+      let user: User;
+
+      beforeEach(() => {
+        user = new User();
+        user.username = mockUsername;
+
+        findByUsername.mockReturnValue(Promise.resolve(user));
+      });
+
+      it('should return the user data', async () => {
+        const fetchedUser = await service.findByUsername(mockUsername);
+        expect(fetchedUser).toEqual(user);
+      });
+    });
+  });
 });
