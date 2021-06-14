@@ -10,6 +10,7 @@ import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { UserModule } from './user/user.module';
     PassportModule,
     AuthModule,
     TokenModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

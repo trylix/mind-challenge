@@ -48,7 +48,7 @@ export class User {
       referencedColumnName: 'id',
     },
   })
-  following: Promise<User[]>;
+  followedList: Promise<User[]>;
 
   @CreateDateColumn({ name: 'created_at' })
   @Exclude()
@@ -59,6 +59,8 @@ export class User {
   updatedAt?: Date;
 
   token?: string;
+
+  following?: boolean;
 
   @BeforeInsert()
   protected async hashPassword() {
