@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ValidationException } from 'src/exceptions/validation.exception';
 import { TokenService } from 'src/token/token.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
@@ -56,5 +57,11 @@ export class UserService {
     }
 
     return user;
+  }
+
+  update(entity: User, dto: UpdateUserDto) {
+    Object.assign(entity, dto);
+
+    return this.userRepository.save(entity);
   }
 }

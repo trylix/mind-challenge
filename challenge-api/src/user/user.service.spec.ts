@@ -9,10 +9,12 @@ describe('UserService', () => {
 
   let findByEmail: jest.Mock;
   let findOne: jest.Mock;
+  let save: jest.Mock;
 
   beforeEach(async () => {
     findByEmail = jest.fn();
     findOne = jest.fn();
+    save = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -20,7 +22,7 @@ describe('UserService', () => {
         {
           provide: UserRepository,
           useValue: {
-            save: jest.fn(() => true),
+            save,
             findByEmail,
             findOne,
           },
@@ -47,6 +49,10 @@ describe('UserService', () => {
       email: 'test@test.com',
       password: 'mysupersecretpassword',
     };
+
+    beforeEach(() => {
+      save = jest.fn(() => true);
+    });
 
     describe('and the email is already registered', () => {
       beforeEach(() => {
@@ -141,6 +147,32 @@ describe('UserService', () => {
         const fetchedUser = await service.findById(mockId);
         expect(fetchedUser).toEqual(user);
       });
+    });
+  });
+
+  describe('when update a user', () => {
+    let user: User;
+
+    const mockUserData = {
+      username: 'test',
+      email: 'test@test.com',
+      password: 'mysupersecretpassword',
+    };
+
+    const mockUpdateUserData = {
+      username: 'mytest',
+      email: 'mytest@mytest.com',
+    };
+
+    beforeEach(() => {
+      user = Object.assign(new User(), mockUserData);
+      save = jest.fn((data) => data);
+    });
+
+    it('should return the updated user data', async () => {
+      const updatedUser = await service.update(user, mockUpdateUserData);
+
+      expect(updatedUser).not.toEqual(user);
     });
   });
 });

@@ -16,6 +16,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (errors) => new ValidationException(errors),
+      transform: true,
     }),
   );
 
