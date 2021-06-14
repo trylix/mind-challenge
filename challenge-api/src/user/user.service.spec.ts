@@ -8,9 +8,11 @@ describe('UserService', () => {
   let service: UserService;
 
   let findByEmail: jest.Mock;
+  let findOne: jest.Mock;
 
   beforeEach(async () => {
     findByEmail = jest.fn();
+    findOne = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -20,6 +22,7 @@ describe('UserService', () => {
           useValue: {
             save: jest.fn(() => true),
             findByEmail,
+            findOne,
           },
         },
         {
@@ -104,6 +107,38 @@ describe('UserService', () => {
 
       it('should return the user data', async () => {
         const fetchedUser = await service.findByEmail(mockEmail);
+        expect(fetchedUser).toEqual(user);
+      });
+    });
+  });
+
+  describe('when trying to find a user by id', () => {
+    const mockId = '403960c6-57f5-424d-929f-761c966638b4';
+
+    describe('and he does not exist', () => {
+      beforeEach(() => {
+        findOne.mockReturnValue(undefined);
+      });
+
+      it('should throw an error', async () => {
+        await expect(service.findById(mockId)).rejects.toThrow(
+          'user not found',
+        );
+      });
+    });
+
+    describe('and he exist', () => {
+      let user: User;
+
+      beforeEach(() => {
+        user = new User();
+        user.id = mockId;
+
+        findOne.mockReturnValue(Promise.resolve(user));
+      });
+
+      it('should return the user data', async () => {
+        const fetchedUser = await service.findById(mockId);
         expect(fetchedUser).toEqual(user);
       });
     });

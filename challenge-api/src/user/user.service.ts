@@ -45,4 +45,16 @@ export class UserService {
     user.token = token;
     return user;
   }
+
+  async findById(id: string) {
+    const user = await this.userRepository.findOne(id);
+    if (!user) {
+      throw new ValidationException({
+        message: 'user not found',
+        field: 'id',
+      });
+    }
+
+    return user;
+  }
 }
