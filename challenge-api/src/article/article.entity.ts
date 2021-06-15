@@ -1,4 +1,5 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
+import { Tag } from 'src/tag/tag.entity';
 import { User } from 'src/user/user.entity';
 import {
   AfterLoad,
@@ -38,6 +39,21 @@ export class Article {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt?: Date;
+
+  @ManyToMany(() => Tag, { eager: true })
+  @JoinTable({
+    name: 'article_tags',
+    joinColumn: {
+      name: 'article_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'tag_id',
+      referencedColumnName: 'id',
+    },
+  })
+  @Transform(({ value }) => value.tag)
+  tagList: Tag[];
 
   @ManyToMany(() => User, { eager: true })
   @JoinTable({
