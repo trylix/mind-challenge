@@ -4,13 +4,14 @@ import { PassportModule } from '@nestjs/passport';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ArticleModule } from './article/article.module';
 import { AuthModule } from './auth/auth.module';
 import envsConfig from './config/envs.config';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { ProfileModule } from './profile/profile.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
-import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ProfileModule } from './profile/profile.module';
     AuthModule,
     TokenModule,
     ProfileModule,
+    ArticleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

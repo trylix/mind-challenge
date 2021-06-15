@@ -1,13 +1,14 @@
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
+import { Article } from 'src/article/article.entity';
 import {
   BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,7 +19,6 @@ export class User {
   @Exclude()
   id!: string;
 
-  @Index()
   @Column({ unique: true })
   email!: string;
 
@@ -26,7 +26,6 @@ export class User {
   @Exclude()
   password!: string;
 
-  @Index()
   @Column({ unique: true })
   username!: string;
 
@@ -57,6 +56,25 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   @Exclude()
   updatedAt?: Date;
+
+  @OneToMany(() => Article, (article) => article.author, { lazy: true })
+  @Exclude()
+  articles: Promise<Article[]>;
+
+  @ManyToMany(() => Article, { lazy: true })
+  @JoinTable({
+    name: 'user_favorites',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'article_id',
+      referencedColumnName: 'id',
+    },
+  })
+  @Exclude()
+  favoritedList: Promise<Article[]>;
 
   token?: string;
 
