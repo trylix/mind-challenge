@@ -176,4 +176,17 @@ export class ArticleService {
 
     return entity;
   }
+
+  async delete(slug: string, currentUser: User) {
+    const entity = await this.findBySlug(slug);
+
+    if (entity.author.id !== currentUser.id) {
+      throw new ValidationException({
+        message: 'you cannot delete articles that are not yours',
+        field: 'author',
+      });
+    }
+
+    return this.articleRepository.delete(entity.id);
+  }
 }

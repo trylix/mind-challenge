@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -66,5 +68,12 @@ export class ArticleController {
     const article = await this.articleService.update(slug, dto.article, user);
 
     return { article };
+  }
+
+  @Delete(':slug')
+  @UseGuards(JwtGuard)
+  @HttpCode(204)
+  async delete(@Param('slug') slug: string, @AuthUser() user: User) {
+    await this.articleService.delete(slug, user);
   }
 }
