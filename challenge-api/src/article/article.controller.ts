@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
   UseInterceptors,
@@ -18,6 +19,7 @@ import { ArticleService } from './article.service';
 import { ArticlesDto } from './dto/articles.dto';
 import { CreateArticleBodyDto } from './dto/create-article-body.dto';
 import { FilterPaginationDto } from './dto/filter-pagination.dto';
+import { UpdateArticleBodyDto } from './dto/update-article-body.dto';
 
 @Controller('articles')
 @UseInterceptors(new TransformInterceptor(Article))
@@ -50,6 +52,18 @@ export class ArticleController {
   @UseGuards(OptionalJwtGuard)
   async getSingle(@Param('slug') slug: string, @AuthUser() user: User) {
     const article = await this.articleService.findBySlug(slug, user);
+
+    return { article };
+  }
+
+  @Put(':slug')
+  @UseGuards(JwtGuard)
+  async update(
+    @Param('slug') slug: string,
+    @Body() dto: UpdateArticleBodyDto,
+    @AuthUser() user: User,
+  ) {
+    const article = await this.articleService.update(slug, dto.article, user);
 
     return { article };
   }

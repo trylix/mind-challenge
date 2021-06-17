@@ -9,6 +9,7 @@ import { ArticleRepository } from './article.repository';
 import { ArticlesDto } from './dto/articles.dto';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { FilterPaginationDto } from './dto/filter-pagination.dto';
+import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
 export class ArticleService {
@@ -41,8 +42,7 @@ export class ArticleService {
 
     entity.author = user;
 
-    const slug = await this.makeSlugFromTitle(dto.title);
-    entity.slug = slug;
+    entity.slug = await this.makeSlugFromTitle(dto.title);
 
     if (tags) {
       entity.tags = await this.tagService.create(tags);
@@ -154,5 +154,26 @@ export class ArticleService {
     delete article.author.email;
 
     return article;
+  }
+
+  async update(slug: string, dto: UpdateArticleDto, currentUser: User) {
+    const entity = await this.findBySlug(slug);
+
+    if (entity.author.id !== currentUser.id) {
+      throw new ValidationException({
+        message: 'you cannot modify articles that are not yours',
+        field: 'author',
+      });
+    }
+
+    if (dto.title && entity.title !== dto.title) {
+      entity.slug = await this.makeSlugFromTitle(dto.title);
+    }
+
+    Object.assign(entity, dto);
+
+    await this.articleRepository.save(entity);
+
+    return entity;
   }
 }
