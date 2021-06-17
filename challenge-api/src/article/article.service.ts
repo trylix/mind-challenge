@@ -228,4 +228,24 @@ export class ArticleService {
 
     return entity;
   }
+
+  async unfavorite(slug: string, currentUser: User) {
+    const entity = await this.findBySlug(slug, currentUser);
+
+    const favoritedUsers = entity.favorites;
+
+    const index = favoritedUsers.findIndex(
+      (user) => user.id === currentUser.id,
+    );
+
+    if (index >= 0) {
+      favoritedUsers.splice(index, 1);
+    }
+
+    entity.assignFields();
+
+    await this.articleRepository.save(entity);
+
+    return entity;
+  }
 }
