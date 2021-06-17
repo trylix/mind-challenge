@@ -15,8 +15,8 @@ export class ProfileService {
     return entity;
   }
 
-  async follow(username: string, currentUser?: User): Promise<User> {
-    const profile = await this.findByUsername(username);
+  async follow(username: string, currentUser: User): Promise<User> {
+    const profile = await this.findByUsername(username, currentUser);
 
     if (profile.id === currentUser.id) {
       throw new ValidationException({
@@ -41,8 +41,8 @@ export class ProfileService {
     return profile;
   }
 
-  async unfollow(username: string, currentUser?: User): Promise<User> {
-    const profile = await this.findByUsername(username);
+  async unfollow(username: string, currentUser: User): Promise<User> {
+    const profile = await this.findByUsername(username, currentUser);
 
     if (profile.id === currentUser.id) {
       throw new ValidationException({
@@ -72,7 +72,7 @@ export class ProfileService {
 
     if (currentUser) {
       const userFollowing = await currentUser.followedList;
-      if (userFollowing?.some((user) => user.id === user.id)) {
+      if (userFollowing?.some((following) => following.id === user.id)) {
         user.following = true;
       }
     }
