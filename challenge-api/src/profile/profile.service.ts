@@ -10,14 +10,7 @@ export class ProfileService {
   async findByUsername(username: string, currentUser?: User): Promise<User> {
     const entity = await this.userService.findByUsername(username);
 
-    Object.assign(entity, { following: false });
-
-    if (currentUser) {
-      const userFollowing = await currentUser.followedList;
-      if (userFollowing?.some((user) => user.id === entity.id)) {
-        entity.following = true;
-      }
-    }
+    await this.checkFollow(entity, currentUser);
 
     return entity;
   }
@@ -72,5 +65,18 @@ export class ProfileService {
     }
 
     return profile;
+  }
+
+  async checkFollow(user: User, currentUser?: User): Promise<User> {
+    Object.assign(user, { following: false });
+
+    if (currentUser) {
+      const userFollowing = await currentUser.followedList;
+      if (userFollowing?.some((user) => user.id === user.id)) {
+        user.following = true;
+      }
+    }
+
+    return user;
   }
 }

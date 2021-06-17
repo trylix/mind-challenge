@@ -1,4 +1,4 @@
-import { Exclude, Transform } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import { Tag } from 'src/tag/tag.entity';
 import { User } from 'src/user/user.entity';
 import {
@@ -52,8 +52,8 @@ export class Article {
       referencedColumnName: 'id',
     },
   })
-  @Transform(({ value }) => value.tag)
-  tagList: Tag[];
+  @Exclude()
+  tags: Tag[];
 
   @ManyToMany(() => User, { eager: true })
   @JoinTable({
@@ -70,13 +70,16 @@ export class Article {
   @Exclude()
   favorites: User[];
 
+  tagList: string[];
+
   favoritesCount?: number;
 
   favorited?: boolean;
 
   @AfterLoad()
-  protected async assignFavorite() {
-    this.favoritesCount = this.favorites.length;
+  assignFields() {
+    this.tagList = this.tags ? this.tags.map((entity) => entity.tag) : [];
+    this.favoritesCount = this.favorites ? this.favorites.length : 0;
     this.favorited = false;
   }
 }
