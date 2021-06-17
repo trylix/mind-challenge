@@ -6,6 +6,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -31,7 +32,8 @@ export class Article {
   @Column()
   body!: string;
 
-  @ManyToOne(() => User, (user) => user.articles, { eager: true })
+  @ManyToOne(() => User, { eager: true })
+  @JoinColumn([{ name: 'authorId', referencedColumnName: 'id' }])
   author: User;
 
   @CreateDateColumn({ name: 'created_at' })
