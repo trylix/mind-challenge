@@ -12,6 +12,7 @@ import { HealthModule } from './health/health.module';
 import { ProfileModule } from './profile/profile.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { UserModule } from './user/user.module';
     TokenModule,
     ProfileModule,
     ArticleModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
