@@ -29,4 +29,10 @@ export class TagService {
 
     return tags;
   }
+
+  async findAll() {
+    const entities = await this.tagRepository.find();
+
+    return entities.map((entity) => entity.tag);
+  }
 }
