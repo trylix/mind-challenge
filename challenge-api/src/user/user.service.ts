@@ -14,20 +14,24 @@ export class UserService {
   ) {}
 
   async create(dto: CreateUserDto) {
-    let userExists = await this.userRepository.findByEmail(dto.email);
-    if (userExists) {
-      throw new ValidationException({
-        message: 'e-mail already registered',
-        field: 'email',
-      });
-    }
+    const userExists = await this.userRepository.findOne({
+      where: [{ email: dto.email }, { username: dto.username }],
+    });
 
-    userExists = await this.userRepository.findByUsername(dto.username);
     if (userExists) {
-      throw new ValidationException({
-        message: 'username already registered',
-        field: 'username',
-      });
+      if (userExists.email === dto.email) {
+        throw new ValidationException({
+          message: 'e-mail already registered',
+          field: 'email',
+        });
+      }
+
+      if (userExists.username === dto.username) {
+        throw new ValidationException({
+          message: 'username already registered',
+          field: 'username',
+        });
+      }
     }
 
     const entity = Object.assign(new User(), dto);
