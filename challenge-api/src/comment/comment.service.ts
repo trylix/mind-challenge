@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ArticleService } from 'src/article/article.service';
+import { ProfileService } from 'src/profile/profile.service';
 import { User } from 'src/user/user.entity';
 import { Comment } from './comment.entity';
 import { CommentRepository } from './comment.repository';
@@ -9,6 +10,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 export class CommentService {
   constructor(
     private readonly articleService: ArticleService,
+    private readonly profileService: ProfileService,
     private readonly commentRepository: CommentRepository,
   ) {}
 
@@ -28,5 +30,27 @@ export class CommentService {
     delete entity.author.email;
 
     return entity;
+  }
+
+  async findFromArticle(slug: string, currentUser?: User) {
+    const article = await this.articleService.findBySlug(slug, currentUser);
+
+    const entities = await this.commentRepository.find({
+      where: {
+        article: {
+          id: article.id,
+        },
+      },
+    });
+
+    const commentsPromise = entities.map(async (comment) => {
+      await this.profileService.checkFollow(comment.author, currentUser);
+      delete comment.author.email;
+      return comment;
+    });
+
+    const comments = await Promise.all(commentsPromise);
+
+    return comments;
   }
 }

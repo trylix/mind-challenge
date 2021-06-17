@@ -67,6 +67,14 @@ export class ArticleController {
     return { comment };
   }
 
+  @Get(':slug/comments')
+  @UseGuards(OptionalJwtGuard)
+  async getComments(@Param('slug') slug: string, @AuthUser() user: User) {
+    const comments = await this.commentService.findFromArticle(slug, user);
+
+    return { comments };
+  }
+
   @Get(':slug')
   @UseGuards(OptionalJwtGuard)
   async getSingle(@Param('slug') slug: string, @AuthUser() user: User) {
