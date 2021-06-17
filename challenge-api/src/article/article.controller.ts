@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -73,6 +74,17 @@ export class ArticleController {
     const comments = await this.commentService.findFromArticle(slug, user);
 
     return { comments };
+  }
+
+  @Delete(':slug/comments/:id')
+  @UseGuards(JwtGuard)
+  @HttpCode(204)
+  async deleteComment(
+    @Param('slug') slug: string,
+    @Param('id', ParseIntPipe) id: number,
+    @AuthUser() user: User,
+  ) {
+    await this.commentService.delete(slug, id, user);
   }
 
   @Get(':slug')

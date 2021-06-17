@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ArticleService } from 'src/article/article.service';
+import { ValidationException } from 'src/exceptions/validation.exception';
 import { ProfileService } from 'src/profile/profile.service';
 import { User } from 'src/user/user.entity';
 import { Comment } from './comment.entity';
@@ -13,6 +14,21 @@ export class CommentService {
     private readonly profileService: ProfileService,
     private readonly commentRepository: CommentRepository,
   ) {}
+
+  private async findById(id: number) {
+    const comment = await this.commentRepository.findOne(id, {
+      relations: ['article'],
+    });
+
+    if (!comment) {
+      throw new ValidationException({
+        message: 'comment not found',
+        field: 'id',
+      });
+    }
+
+    return comment;
+  }
 
   async create(slug: string, dto: CreateCommentDto, currentUser: User) {
     const author = Object.assign(new User(), currentUser);
@@ -52,5 +68,31 @@ export class CommentService {
     const comments = await Promise.all(commentsPromise);
 
     return comments;
+  }
+
+  async delete(slug: string, id: number, currentUser: User) {
+    const comment = await this.findById(id);
+
+    const article = await this.articleService.findBySlug(slug, currentUser);
+
+    if (comment.article.id !== article.id) {
+      throw new ValidationException({
+        message: 'you cannot delete a comment from another post.',
+        field: 'slug',
+      });
+    }
+
+    if (
+      article.author.id !== currentUser.id &&
+      comment.author.id !== currentUser.id
+    ) {
+      throw new ValidationException({
+        message:
+          'you cannot delete a comment that is not yours without being the author of the article',
+        field: 'slug',
+      });
+    }
+
+    return this.commentRepository.delete(comment.id);
   }
 }
