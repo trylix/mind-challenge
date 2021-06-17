@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ValidationException } from 'src/exceptions/validation.exception';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 
@@ -24,6 +25,13 @@ export class ProfileService {
   async follow(username: string, currentUser?: User): Promise<User> {
     const profile = await this.findByUsername(username);
 
+    if (profile.id === currentUser.id) {
+      throw new ValidationException({
+        message: "you can't follow yourself",
+        field: 'username',
+      });
+    }
+
     let userFollowing = await currentUser.followedList;
 
     if (!Array.isArray(userFollowing)) {
@@ -42,6 +50,13 @@ export class ProfileService {
 
   async unfollow(username: string, currentUser?: User): Promise<User> {
     const profile = await this.findByUsername(username);
+
+    if (profile.id === currentUser.id) {
+      throw new ValidationException({
+        message: "you can't unfollow yourself",
+        field: 'username',
+      });
+    }
 
     const userFollowing = await currentUser.followedList;
 
