@@ -7,6 +7,7 @@ import { Article } from './article.entity';
 import { ArticleRepository } from './article.repository';
 import { ArticlesDto } from './dto/articles.dto';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { FilterPaginationDto } from './dto/filter-pagination.dto';
 
 @Injectable()
 export class ArticleService {
@@ -109,6 +110,31 @@ export class ArticleService {
     });
 
     const articles = await Promise.all(articlesPromise);
+
+    return { articles, articlesCount };
+  }
+
+  async feed(search: FilterPaginationDto, currentUser: User) {
+    const followedList = await currentUser.followedList;
+
+    if (!followedList.length) {
+      return { articles: [], articlesCount: 0 };
+    }
+
+    const followedIds = followedList.map((user) => user.id);
+
+    const [data, articlesCount] = await this.articleRepository
+      .createQueryBuilder('article')
+      .where('article.authorId IN (:followedIds)', { followedIds })
+      .take(search.limit)
+      .skip(search.offset)
+      .getManyAndCount();
+
+    const articles = data.map((article) => {
+      article.author.following = true;
+      delete article.author.email;
+      return article;
+    });
 
     return { articles, articlesCount };
   }

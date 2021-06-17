@@ -16,6 +16,7 @@ import { Article } from './article.entity';
 import { ArticleService } from './article.service';
 import { ArticlesDto } from './dto/articles.dto';
 import { CreateArticleBodyDto } from './dto/create-article-body.dto';
+import { FilterPaginationDto } from './dto/filter-pagination.dto';
 
 @Controller('articles')
 @UseInterceptors(new TransformInterceptor(Article))
@@ -36,5 +37,11 @@ export class ArticleController {
     const result = await this.articleService.findAll(search, user);
 
     return result;
+  }
+
+  @Get('feed')
+  @UseGuards(JwtGuard)
+  feed(@Query() search: FilterPaginationDto, @AuthUser() user: User) {
+    return this.articleService.feed(search, user);
   }
 }
