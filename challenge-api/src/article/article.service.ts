@@ -4,6 +4,7 @@ import { ValidationException } from 'src/exceptions/validation.exception';
 import { ProfileService } from 'src/profile/profile.service';
 import { TagService } from 'src/tag/tag.service';
 import { User } from 'src/user/user.entity';
+import { In } from 'typeorm';
 import { Article } from './article.entity';
 import { ArticleRepository } from './article.repository';
 import { ArticlesDto } from './dto/articles.dto';
@@ -107,6 +108,14 @@ export class ArticleService {
     const articlesPromise = data.map(async (article) => {
       await this.profileService.checkFollow(article.author, currentUser);
       delete article.author.email;
+
+      if (
+        currentUser &&
+        article.favorites.find((user) => user.id === currentUser.id)
+      ) {
+        article.favorited = true;
+      }
+
       return article;
     });
 
@@ -124,16 +133,22 @@ export class ArticleService {
 
     const followedIds = followedList.map((user) => user.id);
 
-    const [data, articlesCount] = await this.articleRepository
-      .createQueryBuilder('article')
-      .where('article.authorId IN (:followedIds)', { followedIds })
-      .take(search.limit)
-      .skip(search.offset)
-      .getManyAndCount();
+    const [data, articlesCount] = await this.articleRepository.findAndCount({
+      where: {
+        author: In(followedIds),
+      },
+      take: search.limit,
+      skip: search.offset,
+    });
 
     const articles = data.map((article) => {
       article.author.following = true;
       delete article.author.email;
+
+      if (article.favorites.find((user) => user.id === currentUser.id)) {
+        article.favorited = true;
+      }
+
       return article;
     });
 
@@ -152,6 +167,13 @@ export class ArticleService {
     await this.profileService.checkFollow(article.author, currentUser);
 
     delete article.author.email;
+
+    if (
+      currentUser &&
+      article.favorites.find((user) => user.id === currentUser.id)
+    ) {
+      article.favorited = true;
+    }
 
     return article;
   }
