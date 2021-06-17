@@ -8,7 +8,6 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -56,10 +55,6 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   @Exclude()
   updatedAt?: Date;
-
-  @OneToMany(() => Article, (article) => article.author, { lazy: true })
-  @Exclude()
-  articles: Promise<Article[]>;
 
   @ManyToMany(() => Article, { lazy: true })
   @JoinTable({
