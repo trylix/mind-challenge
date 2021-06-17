@@ -1,6 +1,5 @@
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
-import { Article } from 'src/article/article.entity';
 import {
   BeforeInsert,
   Column,
@@ -55,21 +54,6 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   @Exclude()
   updatedAt?: Date;
-
-  @ManyToMany(() => Article, { lazy: true })
-  @JoinTable({
-    name: 'user_favorites',
-    joinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'article_id',
-      referencedColumnName: 'id',
-    },
-  })
-  @Exclude()
-  favoritedList: Promise<Article[]>;
 
   token?: string;
 
