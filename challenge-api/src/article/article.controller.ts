@@ -14,6 +14,8 @@ import {
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { OptionalJwtGuard } from 'src/auth/guards/optional-jwt.guard';
+import { CommentService } from 'src/comment/comment.service';
+import { CreateCommentBodyDto } from 'src/comment/dto/create-comment-body.dto';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { User } from 'src/user/user.entity';
 import { Article } from './article.entity';
@@ -26,7 +28,10 @@ import { UpdateArticleBodyDto } from './dto/update-article-body.dto';
 @Controller('articles')
 @UseInterceptors(new TransformInterceptor(Article))
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly commentService: CommentService,
+  ) {}
 
   @Post()
   @UseGuards(JwtGuard)
@@ -48,6 +53,18 @@ export class ArticleController {
   @UseGuards(JwtGuard)
   feed(@Query() search: FilterPaginationDto, @AuthUser() user: User) {
     return this.articleService.feed(search, user);
+  }
+
+  @Post(':slug/comments')
+  @UseGuards(JwtGuard)
+  async createComment(
+    @Param('slug') slug: string,
+    @Body() dto: CreateCommentBodyDto,
+    @AuthUser() user: User,
+  ) {
+    const comment = await this.commentService.create(slug, dto.comment, user);
+
+    return { comment };
   }
 
   @Get(':slug')

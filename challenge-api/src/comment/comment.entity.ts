@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -19,9 +20,11 @@ export class Comment {
   body!: string;
 
   @ManyToOne(() => User, { eager: true })
+  @JoinColumn([{ name: 'authorId', referencedColumnName: 'id' }])
   author: User;
 
-  @ManyToOne(() => Article, (article) => article.comments)
+  @ManyToOne(() => Article)
+  @JoinColumn([{ name: 'articleId', referencedColumnName: 'id' }])
   @Exclude()
   article: Article;
 
