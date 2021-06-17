@@ -5,6 +5,7 @@ import { TagService } from 'src/tag/tag.service';
 import { User } from 'src/user/user.entity';
 import { Article } from './article.entity';
 import { ArticleRepository } from './article.repository';
+import { ArticlesDto } from './dto/articles.dto';
 import { CreateArticleDto } from './dto/create-article.dto';
 
 @Injectable()
@@ -37,7 +38,6 @@ export class ArticleService {
     await this.profileService.checkFollow(user);
 
     entity.author = user;
-    delete entity.author.email;
 
     const slug = await this.makeSlugFromTitle(dto.title);
     entity.slug = slug;
@@ -50,6 +50,66 @@ export class ArticleService {
 
     await this.articleRepository.save(entity);
 
+    delete entity.author.email;
+
     return entity;
+  }
+
+  async findAll(search: ArticlesDto, currentUser?: User) {
+    const queryBuilder = this.articleRepository.createQueryBuilder('article');
+
+    if (search.tag) {
+      queryBuilder.innerJoinAndSelect(
+        'article.tags',
+        'tags',
+        'tags.tag = :tag',
+        {
+          tag: search.tag,
+        },
+      );
+    } else {
+      queryBuilder.leftJoinAndSelect('article.tags', 'tags');
+    }
+
+    if (search.author) {
+      queryBuilder.innerJoinAndSelect(
+        'article.author',
+        'author',
+        'author.username = :username',
+        {
+          username: search.author,
+        },
+      );
+    } else {
+      queryBuilder.leftJoinAndSelect('article.author', 'author');
+    }
+
+    if (search.favorited) {
+      queryBuilder.innerJoinAndSelect(
+        'article.favorites',
+        'favorites',
+        'favorites.username = :username',
+        {
+          username: search.author,
+        },
+      );
+    } else {
+      queryBuilder.leftJoinAndSelect('article.favorites', 'favorites');
+    }
+
+    const [data, articlesCount] = await queryBuilder
+      .take(search.limit)
+      .skip(search.offset)
+      .getManyAndCount();
+
+    const articlesPromise = data.map(async (article) => {
+      await this.profileService.checkFollow(article.author, currentUser);
+      delete article.author.email;
+      return article;
+    });
+
+    const articles = await Promise.all(articlesPromise);
+
+    return { articles, articlesCount };
   }
 }
