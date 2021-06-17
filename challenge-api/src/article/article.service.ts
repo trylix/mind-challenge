@@ -189,4 +189,21 @@ export class ArticleService {
 
     return this.articleRepository.delete(entity.id);
   }
+
+  async favorite(slug: string, currentUser: User) {
+    const entity = await this.findBySlug(slug, currentUser);
+
+    const favoritedUsers = entity.favorites;
+    if (!favoritedUsers.find((user) => user.id === currentUser.id)) {
+      favoritedUsers.push(currentUser);
+    }
+
+    entity.assignFields();
+
+    entity.favorited = true;
+
+    await this.articleRepository.save(entity);
+
+    return entity;
+  }
 }

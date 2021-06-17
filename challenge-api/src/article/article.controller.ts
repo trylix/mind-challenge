@@ -87,6 +87,15 @@ export class ArticleController {
     await this.commentService.delete(slug, id, user);
   }
 
+  @Post(':slug/favorite')
+  @UseGuards(JwtGuard)
+  @HttpCode(200)
+  async favorite(@Param('slug') slug: string, @AuthUser() user: User) {
+    const article = await this.articleService.favorite(slug, user);
+
+    return { article };
+  }
+
   @Get(':slug')
   @UseGuards(OptionalJwtGuard)
   async getSingle(@Param('slug') slug: string, @AuthUser() user: User) {
