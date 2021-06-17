@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -43,5 +44,13 @@ export class ArticleController {
   @UseGuards(JwtGuard)
   feed(@Query() search: FilterPaginationDto, @AuthUser() user: User) {
     return this.articleService.feed(search, user);
+  }
+
+  @Get(':slug')
+  @UseGuards(OptionalJwtGuard)
+  async getSingle(@Param('slug') slug: string, @AuthUser() user: User) {
+    const article = await this.articleService.findBySlug(slug, user);
+
+    return { article };
   }
 }

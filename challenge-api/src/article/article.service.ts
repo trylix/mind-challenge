@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import slugify from 'slugify';
+import { ValidationException } from 'src/exceptions/validation.exception';
 import { ProfileService } from 'src/profile/profile.service';
 import { TagService } from 'src/tag/tag.service';
 import { User } from 'src/user/user.entity';
@@ -137,5 +138,21 @@ export class ArticleService {
     });
 
     return { articles, articlesCount };
+  }
+
+  async findBySlug(slug: string, currentUser?: User) {
+    const article = await this.articleRepository.findBySlug(slug);
+    if (!article) {
+      throw new ValidationException({
+        message: 'article not found',
+        field: 'slug',
+      });
+    }
+
+    await this.profileService.checkFollow(article.author, currentUser);
+
+    delete article.author.email;
+
+    return article;
   }
 }
