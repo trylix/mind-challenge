@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getTokenBearer } from '../shared/utils/token';
 
 const createAxios = () => {
   const axiosInstance = axios.create({
@@ -7,7 +8,7 @@ const createAxios = () => {
 
   axiosInstance.interceptors.request.use(
     (config) => {
-      const accessToken = localStorage.getItem('accessToken');
+      const accessToken = getTokenBearer();
       if (accessToken) {
         config.headers.authorization = `Bearer ${accessToken}`;
       }
