@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  mysqlsrv:
+    container_name: challenge_database
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: challenge
+      MYSQL_DATABASE: challenge
+    ports:
+      - '3306:3306'
+
+  apisrv:
+    container_name: challenge_api
+    build:
+      context: challenge-api
+    ports:
+      - '8090:8090'
+    environment:
+      PORT: 8090
+      TYPEORM_USERNAME: root
+      TYPEORM_PASSWORD: challenge
+      TYPEORM_HOST: mysqlsrv
+      TYPEORM_PORT: 3306
+      TYPEORM_DATABASE: challenge
+      JWT_SECRET: mysupersecret
+      ACCESS_TOKEN_DURATION_MINUTES: 30
+    depends_on:
+      - mysqlsrv
+
+  websrv:
+    container_name: challenge_client
+    build:
+      context: challenge-client
+    ports:
+      - '80:80'
+    environment:
+      REACT_APP_API_URL: apisrv:8090/api
+    depends_on:
+      - apisrv

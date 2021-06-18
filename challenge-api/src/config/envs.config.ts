@@ -11,7 +11,7 @@ export default () => {
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
       keepConnectionAlive: isDev,
-      synchronize: isDev,
+      synchronize: true,
     },
     jwt: {
       secret: process.env.JWT_SECRET,
