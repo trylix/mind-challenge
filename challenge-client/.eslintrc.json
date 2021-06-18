@@ -32,7 +32,9 @@
         "tsx": "never"
       }
     ],
-    "react/jsx-filename-extension": ["warn", { "extensions": [".tsx", ".ts"] }]
+    "react/jsx-filename-extension": ["warn", { "extensions": [".tsx", ".ts"] }],
+    "react/jsx-props-no-spreading": "off",
+    "react/prop-types": "off"
   },
   "settings": {
     "import/parser": "babel-eslint",
