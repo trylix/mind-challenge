@@ -1,16 +1,17 @@
 import axios from 'axios';
 import { getTokenBearer } from '../shared/utils/token';
+import envs from './envs';
 
 const createAxios = () => {
   const axiosInstance = axios.create({
-    baseURL: 'https://conduit.productionready.io/api',
+    baseURL: envs().apiUrl,
   });
 
   axiosInstance.interceptors.request.use(
     (config) => {
       const accessToken = getTokenBearer();
       if (accessToken) {
-        config.headers.authorization = `Bearer ${accessToken}`;
+        config.headers.authorization = accessToken;
       }
       return config;
     },
